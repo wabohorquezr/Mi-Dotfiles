@@ -1,0 +1,7 @@
+debtap 3.6.3-1
+hakuneko-desktop-bin 6.1.7-2
+hakuneko-desktop-bin-debug 6.1.7-2
+whatsdesk-bin 0.3.12-1
+whatsdesk-bin-debug 0.3.12-1
+yay 12.5.7-1
+yay-debug 12.5.7-1
