@@ -32,7 +32,6 @@ Bienvenido a mi configuración personal de **Arch Linux** con el gestor de venta
 
 ## Guía de Instalación
 
-### 1. Clonar el repositorio
 Clonaremos el repositorio como una carpeta oculta en tu `$HOME` para mantener el orden.
 
 ```bash
