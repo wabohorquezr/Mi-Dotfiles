@@ -36,5 +36,5 @@ Bienvenido a mi configuración personal de **Arch Linux** con el gestor de venta
 Clonaremos el repositorio como una carpeta oculta en tu `$HOME` para mantener el orden.
 
 ```bash
-git clone [https://github.com/tu-usuario/nombre-del-repo.git](https://github.com/tu-usuario/nombre-del-repo.git) ~/.dotfiles
+git clone https://github.com/wabohorquezr/Mi-Dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
