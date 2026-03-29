@@ -5,7 +5,7 @@ echo "Actualizando el sistema..."
 sudo pacman -Syu --noconfirm
 
 # 2. Instalar desde Pacman (usando tu archivo .txt)
-if [ -f "pacman-list.txt" ]; then
+if [ -f "appPacman.txt" ]; then
     echo "Instalando aplicaciones de Pacman..."
     sudo pacman -S --needed --noconfirm - < pacman-list.txt
 else
@@ -20,7 +20,7 @@ if ! command -v yay &> /dev/null; then
 fi
 
 # 4. Instalar desde AUR (usando tu archivo .txt)
-if [ -f "yay-list.txt" ]; then
+if [ -f "appYay.txt" ]; then
     echo "Instalando aplicaciones de AUR..."
     yay -S --needed --noconfirm - < yay-list.txt
 else
