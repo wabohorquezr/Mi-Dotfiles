@@ -87,4 +87,6 @@ for dir in "${DIRS[@]}"; do
     fi
 done
 
+hyprctl reload
+
 echo "✔ Dotfiles aplicados correctamente"
