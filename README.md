@@ -37,3 +37,5 @@ Clonaremos el repositorio como una carpeta oculta en tu `$HOME` para mantener el
 ```bash
 git clone https://github.com/wabohorquezr/Mi-Dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
+chmod +x install.sh
+./install.sh
