@@ -10,3 +10,6 @@ qutebrowser
 rofi
 rsync
 nvim
+imagemagick
+swww
+findutils
