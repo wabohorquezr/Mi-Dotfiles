@@ -115,5 +115,39 @@ done
 
 echo "✔ Extras movidos correctamente"
 
+########################################
+# 6. Configurar ZSH y Oh My Zsh
+echo "Configurando ZSH..."
+########################################
+# Instalar zsh si no está (por si no estaba en tus listas de pacman)
+sudo pacman -S --needed zsh --noconfirm
+
+# Instalar Oh My Zsh de forma no interactiva
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+    echo "Instalando Oh My Zsh..."
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+else
+    echo "Oh My Zsh ya está instalado."
+fi
+
+# Cambiar el shell por defecto a zsh
+if [ "$SHELL" != "/usr/bin/zsh" ]; then
+    echo "Cambiando el shell predeterminado a ZSH..."
+    chsh -s $(which zsh)
+fi
+
+# 7. Personalizar .zshrc (Tema bira y Fastfetch)
+echo "Personalizando .zshrc..."
+
+# Cambiar el tema a 'bira'
+sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="bira"/' "$HOME/.zshrc"
+
+# Añadir fastfetch al final si no existe ya
+if ! grep -q "fastfetch" "$HOME/.zshrc"; then
+    echo -e "\n# Mostrar info del sistema al abrir terminal\nfastfetch" >> "$HOME/.zshrc"
+fi
+
+echo "¡ZSH configurado con éxito!"
+
 
 echo "✔ Dotfiles aplicados correctamente"
