@@ -2,7 +2,9 @@
 
 # 1. Actualizar el sistema primero
 echo "Actualizando el sistema..."
-sudo pacman -Syu --noconfirm
+
+mapfile -t PKGS < <(grep -vE '^\s*#|^\s*$' appPacman.txt)
+sudo pacman -S --needed --noconfirm "${PKGS[@]}"
 
 # 2. Instalar desde Pacman (usando tu archivo .txt)
 if [ -f "appPacman.txt" ]; then
