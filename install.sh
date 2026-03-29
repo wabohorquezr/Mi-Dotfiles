@@ -28,27 +28,31 @@ else
 fi
 
 
-# 5. Configurar los dotfiles (Evitando conflictos)
-echo "Configurando archivos en ~/.config..."
+#!/bin/bash
 
-# Creamos la carpeta .config por si no existe
-mkdir -p ~/.config
+echo "Aplicando dotfiles desde ~/.dotfiles hacia ~/.config (reemplazo total)"
 
-# Lista de carpetas que vas a mover (añade las que necesites)
+DOTFILES_DIR="$HOME/.dotfiles"
+CONFIG_DIR="$HOME/.config"
+
+mkdir -p "$CONFIG_DIR"
+
 CONFIG_DIRS=("fastfetch" "hypr" "kitty" "ranger" "rofi" "waybar")
 
 for dir in "${CONFIG_DIRS[@]}"; do
-    if [ -d "$HOME/.config/$dir" ]; then
-        echo "Resguardando configuración existente de $dir en $dir.bak"
-        # Borra el backup anterior si existe y crea uno nuevo
-        rm -rf "$HOME/.config/$dir.bak"
-        mv "$HOME/.config/$dir" "$HOME/.config/$dir.bak"
+    SRC="$DOTFILES_DIR/$dir"
+    DEST="$CONFIG_DIR/$dir"
+
+    if [ -d "$SRC" ]; then
+        echo "→ Reemplazando $dir"
+        rm -rf "$DEST"
+        cp -r "$SRC" "$CONFIG_DIR/"
+    else
+        echo "⚠️  $dir no existe en ~/.dotfiles, se omite"
     fi
-    
-    # Copia limpia desde tu carpeta de git a .config
-    echo "Instalando nueva config para $dir..."
-    cp -r "./config/$dir" "$HOME/.config/"
 done
+
+echo "✔ Dotfiles aplicados correctamente"
 
 echo "¡Configuraciones aplicadas sin conflictos!"
 
