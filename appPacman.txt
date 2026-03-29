@@ -8,3 +8,5 @@ python
 python-pillow
 qutebrowser
 rofi
+rsync
+nvim
