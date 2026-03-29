@@ -7,9 +7,9 @@ sudo pacman -Syu --noconfirm
 # 2. Instalar desde Pacman (usando tu archivo .txt)
 if [ -f "appPacman.txt" ]; then
     echo "Instalando aplicaciones de Pacman..."
-    sudo pacman -S --needed --noconfirm - < pacman-list.txt
+    sudo pacman -S --needed --noconfirm - < appPacman.txt 
 else
-    echo "Error: No se encontró pacman-list.txt"
+    echo "Error: No se encontró appPacman.txt"
 fi
 
 # 3. Asegurarse de que 'yay' esté instalado
@@ -22,9 +22,9 @@ fi
 # 4. Instalar desde AUR (usando tu archivo .txt)
 if [ -f "appYay.txt" ]; then
     echo "Instalando aplicaciones de AUR..."
-    yay -S --needed --noconfirm - < yay-list.txt
+    yay -S --needed --noconfirm - < appYay.txt
 else
-    echo "Error: No se encontró yay-list.txt"
+    echo "Error: No se encontró appYay.txt"
 fi
 
 
