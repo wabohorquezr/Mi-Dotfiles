@@ -147,6 +147,25 @@ if ! grep -q "fastfetch" "$HOME/.zshrc"; then
     echo -e "\n# Mostrar info del sistema al abrir terminal\nfastfetch" >> "$HOME/.zshrc"
 fi
 
+########################################
+# 7. .zshrc → HOME (reemplazo si existe)
+########################################
+
+DOTFILES_DIR="$HOME/.dotfiles"
+
+for path in \
+    "$DOTFILES_DIR/.zshrc" \
+    "$DOTFILES_DIR/.config/.zshrc" \
+    "$DOTFILES_DIR/home/$USER/.zshrc"
+do
+    if [ -f "$path" ]; then
+        rm -f "$HOME/.zshrc"
+        cp "$path" "$HOME/.zshrc"
+        break
+    fi
+done
+
+
 echo "¡ZSH configurado con éxito!"
 
 
