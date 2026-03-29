@@ -1,64 +1,77 @@
 #!/bin/bash
 
-# 1. Actualizar el sistema primero
-echo "Actualizando el sistema..."
+set -e
 
-mapfile -t PKGS < <(grep -vE '^\s*#|^\s*$' appPacman.txt)
-sudo pacman -S --needed --noconfirm "${PKGS[@]}"
+echo "==============================="
+echo "  INSTALADOR DE ENTORNO ARCH  "
+echo "==============================="
 
-# 2. Instalar desde Pacman (usando tu archivo .txt)
-if [ -f "appPacman.txt" ]; then
-    echo "Instalando aplicaciones de Pacman..."
-    sudo pacman -S --needed --noconfirm - < appPacman.txt 
-else
-    echo "Error: No se encontró appPacman.txt"
-fi
-
-# 3. Asegurarse de que 'yay' esté instalado
-if ! command -v yay &> /dev/null; then
-    echo "Instalando yay (AUR helper)..."
-    sudo pacman -S --needed git base-devel --noconfirm
-    git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si --noconfirm && cd ..
-fi
-
-# 4. Instalar desde AUR (usando tu archivo .txt)
-if [ -f "appYay.txt" ]; then
-    echo "Instalando aplicaciones de AUR..."
-    yay -S --needed --noconfirm - < appYay.txt
-else
-    echo "Error: No se encontró appYay.txt"
-fi
-
-
-#!/bin/bash
-
-echo "Aplicando dotfiles desde ~/.dotfiles hacia ~/.config (reemplazo total)"
-
+PACMAN_LIST="appPacman.txt"
+YAY_LIST="appYay.txt"
 DOTFILES_DIR="$HOME/.dotfiles"
 CONFIG_DIR="$HOME/.config"
 
-mkdir -p "$CONFIG"
+########################################
+# 1. Instalar paquetes de Pacman
+########################################
+if [ -f "$PACMAN_LIST" ]; then
+    echo "📦 Instalando paquetes de Pacman..."
+
+    while read -r pkg; do
+        echo "→ $pkg"
+        sudo pacman -S --needed --noconfirm "$pkg" || echo "❌ Falló $pkg"
+    done < <(grep -vE '^\s*#|^\s*$' "$PACMAN_LIST")
+
+else
+    echo "⚠️  No se encontró $PACMAN_LIST"
+fi
+
+########################################
+# 2. Instalar yay si no existe
+########################################
+if ! command -v yay &> /dev/null; then
+    echo "🔧 Instalando yay (AUR helper)..."
+    sudo pacman -S --needed git base-devel --noconfirm
+    git clone https://aur.archlinux.org/yay.git
+    cd yay && makepkg -si --noconfirm
+    cd ..
+    rm -rf yay
+fi
+
+########################################
+# 3. Instalar paquetes AUR
+########################################
+if [ -f "$YAY_LIST" ]; then
+    echo "📦 Instalando paquetes de AUR..."
+
+    while read -r pkg; do
+        echo "→ $pkg"
+        yay -S --needed --noconfirm "$pkg" || echo "❌ Falló $pkg"
+    done < <(grep -vE '^\s*#|^\s*$' "$YAY_LIST")
+
+else
+    echo "⚠️  No se encontró $YAY_LIST"
+fi
+
+########################################
+# 4. Aplicar dotfiles (reemplazo total real)
+########################################
+echo "🎨 Aplicando dotfiles (reemplazo total)"
 
 DIRS=("fastfetch" "hypr" "kitty" "ranger" "rofi" "waybar")
 
 for dir in "${DIRS[@]}"; do
-    SRC="$DOTFILES/$dir/"
-    DEST="$CONFIG/$dir/"
+    SRC="$DOTFILES_DIR/$dir"
+    DEST="$CONFIG_DIR/$dir"
 
     if [ -d "$SRC" ]; then
         echo "→ Reemplazando $dir"
-
-        mkdir -p "$DEST"
-
-        rsync -a --delete "$SRC" "$DEST"
+        rm -rf "$DEST"
+        cp -r "$SRC" "$CONFIG_DIR/"
     else
         echo "⚠️  $dir no existe en ~/.dotfiles"
     fi
 done
 
-echo "✔ Dotfiles sincronizados exactamente al repo"
-
-echo "¡Configuraciones aplicadas sin conflictos!"
-
-
-echo "¡Instalación completa! Reinicia para ver los cambios."
+echo "✔ Dotfiles aplicados correctamente"
+echo "✅ Instalación completa. Reinicia sesión para ver los cambios."
