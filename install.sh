@@ -89,4 +89,31 @@ done
 
 hyprctl reload
 
+########################################
+# 5. Extras → Pictures
+########################################
+echo "🖼️  Moviendo extras a ~/Pictures"
+
+DOTFILES_DIR="$HOME/.dotfiles"
+PICTURES_DIR="$HOME/Pictures"
+EXTRAS_DIR="$DOTFILES_DIR/.extras"
+
+mkdir -p "$PICTURES_DIR"
+
+for extra in ".Wallpaper" ".fastfetch_vault"; do
+    SRC="$EXTRAS_DIR/$extra"
+    DEST="$PICTURES_DIR/$extra"
+
+    if [ -d "$SRC" ]; then
+        echo "→ Moviendo $extra a Pictures"
+        rm -rf "$DEST"
+        mv "$SRC" "$PICTURES_DIR/"
+    else
+        echo "⚠️  $extra no existe en .extras"
+    fi
+done
+
+echo "✔ Extras movidos correctamente"
+
+
 echo "✔ Dotfiles aplicados correctamente"
