@@ -35,24 +35,26 @@ echo "Aplicando dotfiles desde ~/.dotfiles hacia ~/.config (reemplazo total)"
 DOTFILES_DIR="$HOME/.dotfiles"
 CONFIG_DIR="$HOME/.config"
 
-mkdir -p "$CONFIG_DIR"
+mkdir -p "$CONFIG"
 
-CONFIG_DIRS=("fastfetch" "hypr" "kitty" "ranger" "rofi" "waybar")
+DIRS=("fastfetch" "hypr" "kitty" "ranger" "rofi" "waybar")
 
-for dir in "${CONFIG_DIRS[@]}"; do
-    SRC="$DOTFILES_DIR/$dir"
-    DEST="$CONFIG_DIR/$dir"
+for dir in "${DIRS[@]}"; do
+    SRC="$DOTFILES/$dir/"
+    DEST="$CONFIG/$dir/"
 
     if [ -d "$SRC" ]; then
         echo "→ Reemplazando $dir"
-        rm -rf "$DEST"
-        cp -r "$SRC" "$CONFIG_DIR/"
+
+        mkdir -p "$DEST"
+
+        rsync -a --delete "$SRC" "$DEST"
     else
-        echo "⚠️  $dir no existe en ~/.dotfiles, se omite"
+        echo "⚠️  $dir no existe en ~/.dotfiles"
     fi
 done
 
-echo "✔ Dotfiles aplicados correctamente"
+echo "✔ Dotfiles sincronizados exactamente al repo"
 
 echo "¡Configuraciones aplicadas sin conflictos!"
 
