@@ -13,3 +13,4 @@ nvim
 imagemagick
 swww
 findutils
+bluetui
