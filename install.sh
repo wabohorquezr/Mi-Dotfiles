@@ -54,14 +54,28 @@ else
 fi
 
 ########################################
-# 4. Aplicar dotfiles (reemplazo total real)
+# 4. Aplicar dotfiles (detecta estructura automáticamente)
 ########################################
-echo "🎨 Aplicando dotfiles (reemplazo total)"
+echo "🎨 Aplicando dotfiles (detección automática)"
+
+DOTFILES_DIR="$HOME/.dotfiles"
+CONFIG_DIR="$HOME/.config"
+
+# Detectar dónde está realmente la carpeta .config dentro del repo
+if [ -d "$DOTFILES_DIR/.config" ]; then
+    BASE="$DOTFILES_DIR/.config"
+elif [ -d "$DOTFILES_DIR/home/$USER/.config" ]; then
+    BASE="$DOTFILES_DIR/home/$USER/.config"
+else
+    BASE="$DOTFILES_DIR"
+fi
+
+echo "📁 Usando dotfiles desde: $BASE"
 
 DIRS=("fastfetch" "hypr" "kitty" "ranger" "rofi" "waybar")
 
 for dir in "${DIRS[@]}"; do
-    SRC="$DOTFILES_DIR/$dir"
+    SRC="$BASE/$dir"
     DEST="$CONFIG_DIR/$dir"
 
     if [ -d "$SRC" ]; then
@@ -69,9 +83,8 @@ for dir in "${DIRS[@]}"; do
         rm -rf "$DEST"
         cp -r "$SRC" "$CONFIG_DIR/"
     else
-        echo "⚠️  $dir no existe en ~/.dotfiles"
+        echo "⚠️  $dir no existe en $BASE"
     fi
 done
 
 echo "✔ Dotfiles aplicados correctamente"
-echo "✅ Instalación completa. Reinicia sesión para ver los cambios."
