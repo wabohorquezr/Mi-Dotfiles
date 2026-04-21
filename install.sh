@@ -169,4 +169,24 @@ done
 echo "¡ZSH configurado con éxito!"
 
 
+########################################
+# 8. Configuración de AWWW (wallpaper Wayland)
+########################################
+echo "🖼️  Configurando awww para wallpapers..."
+
+# Crear carpeta de caché que awww necesita
+mkdir -p "$HOME/.cache/awww"
+
+# Asegurar que el daemon arranque con Hyprland
+HYPR_CONF="$HOME/.config/hypr/hyprland.conf"
+
+if grep -q "swww-daemon" "$HYPR_CONF"; then
+    sed -i 's/swww-daemon/awww-daemon/' "$HYPR_CONF"
+fi
+
+# Quitar hyprpaper si existe (conflicta)
+sed -i 's/.*hyprpaper.*//g' "$HYPR_CONF"
+
+echo "✔ awww configurado correctamente"
+
 echo "✔ Dotfiles aplicados correctamente"
