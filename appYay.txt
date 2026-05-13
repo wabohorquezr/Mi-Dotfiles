@@ -1,3 +1,2 @@
 debtap 
-hakuneko-desktop-bin 
 whatsdesk-bin
