@@ -16,4 +16,5 @@ findutils
 bluetui
 curl
 fastfetch
+octave
 onlyoffice
