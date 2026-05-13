@@ -16,3 +16,4 @@ findutils
 bluetui
 curl
 fastfetch
+onlyoffice
