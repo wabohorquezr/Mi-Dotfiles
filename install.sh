@@ -18,6 +18,7 @@ PKGS=(
     awww
     ttf-jetbrains-mono-nerd
     zsh
+    ranger
 )
 
 echo "Instalando paquetes..."
@@ -26,7 +27,6 @@ sudo pacman -Syu --needed "${PKGS[@]}"
 
 echo "Instalación completada."
 
-chsh -s "$(which zsh)"
 
 echo "Zsh instalado."
 
@@ -89,5 +89,8 @@ PKGSYAY=(
 
 
 yay -S --needed --noconfirm "${PKGSYAY[@]}"
+
+chsh -s "$(which zsh)"
+
 
 echo "Zen Browser instalado correctamente."
