@@ -55,8 +55,6 @@ rsync -av --delete "$TMP_DIR/config/rofi/" ~/.config/rofi/
 rsync -av --delete "$TMP_DIR/config/waybar/" ~/.config/waybar/
 
 
-echo "Limpieza..."
-rm -rf "$TMP_DIR"
 
 echo "Instalación de Directorios completada."
 
@@ -97,9 +95,12 @@ yay -S --needed --noconfirm "${PKGSYAY[@]}"
 
 echo "Zen Browser instalado correctamente."
 
-TMP_DIR_WALL="/tmp/wallpaper"
 mkdir -p ~/Pictures/.wallpaper
 
-rsync -av --delete "$TMP_DIR_WALL/config/wallpaper/" ~/Pictures/.wallpaper/
+rsync -av --delete "$TMP_DIR/config/wallpaper/" ~/Pictures/.wallpaper/
+
+echo "Limpieza..."
+rm -rf "$TMP_DIR"
+
 
 chsh -s "$(which zsh)"
