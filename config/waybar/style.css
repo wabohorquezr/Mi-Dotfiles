@@ -1,0 +1,109 @@
+* {
+    border: none;
+    font-family: "JetBrainsMono Nerd Font", monospace;
+    font-size: 12px;
+    min-height: 0;
+    color: #cccccc;
+    font-weight: bold;
+}
+
+#window {
+    border-radius: 15px;
+}
+
+window#waybar {
+    background-color: transparent;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 10px;
+}
+
+#workspaces {
+    margin: 5px 10px;
+    padding: 0px 2px;
+    border-radius: 10px;
+    border: 1px solid #ffffff;
+    background: #1e1e1e;
+}
+
+#workspaces button {
+    margin: 2px 1.5px;
+    padding: 3px 12px 3px 6px;
+    border-radius: 0px;
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #888888;
+    transition: all 0.2s ease-out;
+    font-size: 28px;
+    border-top: 1px solid #444444;
+    border-bottom: 1px solid #444444;
+}
+
+#workspaces button:first-child {
+    border-radius: 8px 0px 0px 8px;
+    border-left: 1px solid #444444;
+}
+
+#workspaces button:last-child {
+    border-radius: 0px 8px 8px 0px;
+    border-right: 1px solid #444444;
+}
+
+#workspaces button.active {
+    background-color: #ffffff;
+    color: #111111;
+}
+
+#workspaces button.active label {
+    color: #111111;
+}
+
+#workspaces button:hover label {
+    color: #ffffff;
+}
+
+#workspaces button:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+}
+
+#clock,
+#pulseaudio,
+#network,
+#battery {
+    padding: 0 10px;
+    margin: 5px 6px;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    color: #000000;
+    transition: all 0.3s ease;
+}
+
+#clock:hover,
+#pulseaudio:hover,
+#network:hover {
+    background-color: #252525;
+    color: #ffffff;
+    border: 1px solid #ffffff;
+}
+
+#custom-playerctl,
+#custom-memory {
+    padding: 5px 10px;
+    margin: 5px 4px;
+    color: #ffffff;
+    background-color: #252525;
+    border-radius: 10px;
+    border: 1px solid #ffffff;
+    transition: all 0.2s ease-in-out;
+}
+
+#custom-playerctl:hover,
+#custom-memory:hover {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+#pulseaudio {
+    margin-left: 0px;
+}

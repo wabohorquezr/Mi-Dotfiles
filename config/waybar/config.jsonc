@@ -1,0 +1,87 @@
+{
+  "layer": "top",
+  "position": "top",
+  "margin": "2 5 0 5",
+  "mode": "dock",
+  "exclusive": true, 
+  "modules-left": [
+    "hyprland/workspaces",
+    "custom/apps"
+  ],
+  "modules-center": [
+    "clock",
+    "custom/playerctl"
+  ],
+  "modules-right": [
+    "custom/memory",
+    "network",
+    "pulseaudio",
+    "battery"
+  ],
+  "hyprland/workspaces": {
+    "format": "{icon}", 
+    "on-click": "activate",
+    "sort-by-number": true,
+    "persistent-workspaces": {
+      "*": 5
+    },
+    "format-icons": {
+      "active": "<span font='5'></span>",
+      "default": "<span font='5'></span>"
+    }
+  },
+  "clock": {
+    "format": "{:%H:%M}",
+    "tooltip-format": "{:%A, %d %B %Y}"
+  },
+  "custom/playerctl": {
+    "exec": "~/.config/waybar/scripts/nowplaying.sh",
+    "return-type": "text",
+    "interval": 2,
+    "signal": 10,
+    "format": "{}",
+    "on-click": "playerctl play-pause; pkill -RTMIN+10 waybar",
+    "on-scroll-up": "playerctl next; pkill -RTMIN+10 waybar",
+    "on-scroll-down": "playerctl previous; pkill -RTMIN+10 waybar"
+  },
+  "network": {
+    "format": " ",
+    "format-alt": "  {bandwidthDownBits} ↓",
+    "format-disconnected": "Disconnected"
+  },
+  "custom/memory": {
+    "interval": 5,
+    "exec": "free -h | awk '/Mem:/ {printf \"%.1f\", $3}'",
+    "return-type": "text",
+    "format": "Ram: {}G"
+  },
+  "pulseaudio": {
+    "format": "  Volume: {volume}%",
+    "format-muted": "  Muted",
+    "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
+    "scroll-step": 5
+  },
+  "battery": {
+  "states": {
+    "warning": 30,
+    "critical": 15
+  },
+  "format": "{icon}  {capacity}%",
+  "format-charging": "󰂄 {capacity}%",
+  "format-icons": [
+    "󰂎",
+    "󰁺",
+    "󰁻",
+    "󰁼",
+    "󰁽",
+    "󰁾",
+    "󰁿",
+    "󰂀",
+    "󰂁",
+    "󰂂",
+    "󰁹"
+  ]
+}
+  
+
+}
