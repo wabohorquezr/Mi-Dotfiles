@@ -90,11 +90,15 @@ PKGSYAY=(
 sudo pacman -S xdg-user-dirs
 xdg-user-dirs-update
 
-mkdir -p ~/Pictures/.wallpaper
+
 
 yay -S --needed --noconfirm "${PKGSYAY[@]}"
 
-chsh -s "$(which zsh)"
-
 
 echo "Zen Browser instalado correctamente."
+
+mkdir -p ~/Pictures/.wallpaper
+
+rsync -av --delete "$TMP_DIR/config/wallpaper/" ~/Pictures/.wallpaper/
+
+chsh -s "$(which zsh)"
