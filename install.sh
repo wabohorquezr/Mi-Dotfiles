@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -e
 
 PKGS=(
     waybar
@@ -18,8 +19,8 @@ PKGS=(
     ttf-jetbrains-mono-nerd
     zsh
 )
-echo "Instalando paquetes..."
 
+echo "Instalando paquetes..."
 
 sudo pacman -Syu --needed "${PKGS[@]}"
 
@@ -33,7 +34,6 @@ echo "Zsh instalado."
 
 REPO="https://github.com/wabohorquezr/Mi-Dotfiles.git"
 TMP_DIR="/tmp/mis-dotfiles"
-
 echo "Clonando repositorio..."
 git clone "$REPO" "$TMP_DIR"
 
@@ -55,4 +55,36 @@ rsync -av --delete "$TMP_DIR/rofi/" ~/.config/rofi/
 echo "Limpieza..."
 rm -rf "$TMP_DIR"
 
-echo "Instalación completada."
+echo "Instalación de Directorios completada."
+
+
+
+echo "Instalando dependencias yay..."
+sudo pacman -S --needed git base-devel
+
+if ! command -v yay >/dev/null 2>&1; then
+    echo "Instalando yay..."
+
+    TMP_DIR_YAY="/tmp/yay"
+
+    rm -rf "$TMP_DIR_YAY"
+    git clone https://aur.archlinux.org/yay.git "$TMP_DIR_YAY"
+
+    cd "$TMP_DIR_YAY"
+    makepkg -si --noconfirm
+
+    cd ~
+    rm -rf "$TMP_DIR_YAY"
+fi
+
+echo "Instalando apss yay..."
+
+PKGSYAY=(
+    zen-browser-bin
+    ltspice
+    )
+
+
+yay -S --needed --noconfirm "${PKGSYAY[@]}"
+
+echo "Zen Browser instalado correctamente."
