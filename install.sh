@@ -89,6 +89,9 @@ PKGSYAY=(
 
 sudo pacman -S xdg-user-dirs
 xdg-user-dirs-update
+
+mkdir -p ~/Pictures/.wallpaper
+
 yay -S --needed --noconfirm "${PKGSYAY[@]}"
 
 chsh -s "$(which zsh)"
