@@ -87,7 +87,8 @@ PKGSYAY=(
     ltspice
     )
 
-
+sudo pacman -S xdg-user-dirs
+xdg-user-dirs-update
 yay -S --needed --noconfirm "${PKGSYAY[@]}"
 
 chsh -s "$(which zsh)"
