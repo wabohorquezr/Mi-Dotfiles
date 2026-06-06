@@ -43,14 +43,17 @@ mkdir -p ~/.config/hypr
 mkdir -p ~/.config/kitty
 mkdir -p ~/.config/ranger
 mkdir -p ~/.config/rofi
+mkdir -p ~/.config/waybar
 
 echo "Limpieza..."
 
 
-rsync -av --delete "$TMP_DIR/hypr/" ~/.config/hypr/
-rsync -av --delete "$TMP_DIR/kitty/" ~/.config/kitty/
-rsync -av --delete "$TMP_DIR/ranger/" ~/.config/ranger/
-rsync -av --delete "$TMP_DIR/rofi/" ~/.config/rofi/
+rsync -av --delete "$TMP_DIR/config/hypr/" ~/.config/hypr/
+rsync -av --delete "$TMP_DIR/config/kitty/" ~/.config/kitty/
+rsync -av --delete "$TMP_DIR/config/ranger/" ~/.config/ranger/
+rsync -av --delete "$TMP_DIR/config/rofi/" ~/.config/rofi/
+rsync -av --delete "$TMP_DIR/config/waybar/" ~/.config/waybar/
+
 
 echo "Limpieza..."
 rm -rf "$TMP_DIR"
