@@ -97,8 +97,9 @@ yay -S --needed --noconfirm "${PKGSYAY[@]}"
 
 echo "Zen Browser instalado correctamente."
 
+TMP_DIR_WALL="/tmp/wallpaper"
 mkdir -p ~/Pictures/.wallpaper
 
-rsync -av --delete "$TMP_DIR/config/wallpaper/" ~/Pictures/.wallpaper/
+rsync -av --delete "$TMP_DIR_WALL/config/wallpaper/" ~/Pictures/.wallpaper/
 
 chsh -s "$(which zsh)"
