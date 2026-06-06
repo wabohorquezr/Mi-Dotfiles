@@ -102,5 +102,6 @@ rsync -av --delete "$TMP_DIR/config/wallpaper/" ~/Pictures/.wallpaper/
 echo "Limpieza..."
 rm -rf "$TMP_DIR"
 
+chmod +x ~/.config/rofi/scripts/wallpaper.sh
 
 chsh -s "$(which zsh)"
