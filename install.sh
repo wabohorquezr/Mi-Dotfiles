@@ -87,7 +87,7 @@ PKGSYAY=(
 
 sudo pacman -S xdg-user-dirs
 xdg-user-dirs-update
-
+git clone https://github.com/NvChad/starter ~/.config/nvim && nvim
 
 
 yay -S --needed --noconfirm "${PKGSYAY[@]}"
