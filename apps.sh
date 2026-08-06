@@ -3,6 +3,7 @@
 #!/bin/bash
 
 PKGS=(
+    zathura-pdf-mupdf
     vlc
     wl-clipboard
     waybar
