@@ -3,6 +3,7 @@
 #!/bin/bash
 
 PKGS=(
+    vlc
     wl-clipboard
     waybar
     rofi
