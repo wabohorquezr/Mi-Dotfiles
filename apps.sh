@@ -3,6 +3,7 @@
 #!/bin/bash
 
 PKGS=(
+    wl-clipboard
     waybar
     rofi
     kitty
