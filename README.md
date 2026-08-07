@@ -46,4 +46,4 @@ chmod +x install.sh
 Para actualizar el repositorio y volver a aplicar la configuración:
 
 ```bash
-cd ~/.dotfiles && git pull && ./install.sh
+cd ~/.dotfiles && git checkout -- . && git pull && ./install.sh
