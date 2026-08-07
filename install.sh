@@ -3,6 +3,7 @@
 set -e
 
 PKGS=(
+    cliphist
     waybar
     rofi
     kitty
