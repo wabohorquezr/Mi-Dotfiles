@@ -105,4 +105,7 @@ rm -rf "$TMP_DIR"
 
 chmod +x ~/.config/rofi/scripts/wallpaper.sh
 
+echo "==> Creando directorio para capturas de pantalla..."
+mkdir -p "$HOME/Pictures/Screenshots"
+
 chsh -s "$(which zsh)"
