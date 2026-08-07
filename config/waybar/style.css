@@ -81,6 +81,36 @@ window#waybar {
 
 #clock:hover,
 #pulseaudio:hover,
+/* Estilo base de red */
+#network {
+    padding: 0 10px;
+    margin: 5px 6px;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+/* Conectado por Wi-Fi */
+#network.wifi {
+    background-color: #f0f0f0;
+    color: #000000;
+    border: 1px solid transparent;
+}
+
+/* Conectado por Cable Ethernet */
+#network.ethernet {
+    background-color: #252525;
+    color: #ffffff;
+    border: 1px solid #ffffff;
+}
+
+/* Desconectado */
+#network.disconnected {
+    background-color: #3b1818;
+    color: #ff5555;
+    border: 1px solid #ff5555;
+}
+
+/* Tu efecto hover para todos los estados */
 #network:hover {
     background-color: #252525;
     color: #ffffff;

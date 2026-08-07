@@ -45,9 +45,11 @@
     "on-scroll-down": "playerctl previous; pkill -RTMIN+10 waybar"
   },
   "network": {
-    "format": " ",
-    "format-alt": "  {bandwidthDownBits} ↓",
-    "format-disconnected": "Disconnected"
+    "format-wifi": "  {essid}",
+    "format-ethernet": "󰈀 Cable",
+    "format-linked": "󰈀 Sin IP",
+    "format-disconnected": "󰤭 Desconectado",
+    "format-alt": "{bandwidthDownBits} ↓"
   },
   "custom/memory": {
     "interval": 5,
