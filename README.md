@@ -39,3 +39,10 @@ git clone https://github.com/wabohorquezr/Mi-Dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 chmod +x install.sh
 ./install.sh
+
+## 🔄 Actualización
+
+Para actualizar el repositorio y volver a aplicar la configuración:
+
+```bash
+cd ~/.dotfiles && git pull && ./install.sh
