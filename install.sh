@@ -113,33 +113,19 @@ limpiar_sistema() {
 }
 
 configurar_grub() {
-    echo "==> Configurando GRUB (Dual-Boot y Tema)..."
+    echo "==> Configurando GRUB para Dual-Boot..."
     
-    # 1. Habilitar os-prober para detectar Windows
+    # 1. Asegurar que os-prober y ntfs-3g estén instalados
+    sudo pacman -S --needed --noconfirm os-prober ntfs-3g
+
+    # 2. Habilitar os-prober en /etc/default/grub
     if grep -q "^#GRUB_DISABLE_OS_PROBER=false" /etc/default/grub; then
         sudo sed -i 's/^#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
     elif ! grep -q "^GRUB_DISABLE_OS_PROBER=false" /etc/default/grub; then
         echo "GRUB_DISABLE_OS_PROBER=false" | sudo tee -a /etc/default/grub
     fi
 
-    # 2. Limpiar carpeta temporal y descargar el tema
-    TMP_GRUB_THEME="/tmp/grub-theme"
-    rm -rf "$TMP_GRUB_THEME"
-    git clone --depth 1 https://github.com/catppuccin/grub.git "$TMP_GRUB_THEME"
-    
-    sudo mkdir -p /boot/grub/themes
-    sudo cp -r "$TMP_GRUB_THEME/src/mocha" /boot/grub/themes/catppuccin-mocha
-    
-    # Asignar tema en la configuración
-    if ! grep -q "^GRUB_THEME=" /etc/default/grub; then
-        echo 'GRUB_THEME="/boot/grub/themes/catppuccin-mocha/theme.txt"' | sudo tee -a /etc/default/grub
-    else
-        sudo sed -i 's|^GRUB_THEME=.*|GRUB_THEME="/boot/grub/themes/catppuccin-mocha/theme.txt"|' /etc/default/grub
-    fi
-    
-    rm -rf "$TMP_GRUB_THEME"
-
-    # 3. Aplicar cambios
+    # 3. Regenerar entradas de GRUB
     sudo grub-mkconfig -o /boot/grub/grub.cfg
 }
 
