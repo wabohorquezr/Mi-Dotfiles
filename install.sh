@@ -2,41 +2,24 @@
 
 set -e
 
-PKGS=(
-    cliphist
-    waybar
-    rofi
-    kitty
-    git
-    rsync
-    julia
-    neovim
-    octave
-    impala
-    bluetui
-    network-manager-applet
-    brightnessctl
-    awww
-    ttf-jetbrains-mono-nerd
-    zsh
-    ranger
-)
-
-echo "Instalando paquetes..."
-
-sudo pacman -Syu --needed "${PKGS[@]}"
-
-echo "Instalación completada."
-
-
-echo "Zsh instalado."
-
-#Repositorio
-
 REPO="https://github.com/wabohorquezr/Mi-Dotfiles.git"
 TMP_DIR="/tmp/mis-dotfiles"
+
+# --- Clonar el repositorio primero ---
 echo "Clonando repositorio..."
+rm -rf "$TMP_DIR"
 git clone "$REPO" "$TMP_DIR"
+
+# --- Ejecutar la instalación de paquetes con apps.sh ---
+if [ -f "$TMP_DIR/apps.sh" ]; then
+    echo "Ejecutando script de instalación de aplicaciones (apps.sh)..."
+    chmod +x "$TMP_DIR/apps.sh"
+    bash "$TMP_DIR/apps.sh"
+else
+    echo "Error: No se encontró apps.sh en el repositorio."
+    exit 1
+fi
+
 
 echo "Creando directorios en .config"
 
