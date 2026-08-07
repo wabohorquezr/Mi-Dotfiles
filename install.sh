@@ -108,4 +108,6 @@ chmod +x ~/.config/rofi/scripts/wallpaper.sh
 echo "==> Creando directorio para capturas de pantalla..."
 mkdir -p "$HOME/Pictures/Screenshots"
 
+chmod +x "$HOME/.config/ranger/scope.sh"
+
 chsh -s "$(which zsh)"
