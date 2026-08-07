@@ -113,9 +113,9 @@ limpiar_sistema() {
 }
 
 configurar_grub() {
-    echo "==> Configurando GRUB para Dual-Boot..."
+    echo "==> Configurando GRUB para Dual-Boot de forma automática..."
     
-    # 1. Asegurar que os-prober y ntfs-3g estén instalados
+    # 1. Instalar dependencias
     sudo pacman -S --needed --noconfirm os-prober ntfs-3g
 
     # 2. Habilitar os-prober en /etc/default/grub
@@ -125,10 +125,36 @@ configurar_grub() {
         echo "GRUB_DISABLE_OS_PROBER=false" | sudo tee -a /etc/default/grub
     fi
 
-    # 3. Regenerar entradas de GRUB
-    sudo grub-mkconfig -o /boot/grub/grub.cfg
-}
+    # 3. Forzar el montaje de TODAS las particiones de Windows/EFI
+    echo "==> Escaneando y montando particiones temporalmente para forzar detección..."
+    sudo mkdir -p /tmp/win_mounts
+    
+    # Busca particiones vfat (donde está el EFI de Windows) y ntfs
+    for part in $(lsblk -lno PATH,FSTYPE | grep -E 'vfat|ntfs' | awk '{print $1}'); do
+        # Solo monta si la partición no está ya montada por el sistema (evita chocar con la EFI de Arch)
+        if ! grep -q "$part" /proc/mounts; then
+            dir_name="/tmp/win_mounts/$(basename $part)"
+            sudo mkdir -p "$dir_name"
+            # Se monta como 'ro' (solo lectura) para evitar errores si Windows tiene Inicio Rápido activado
+            sudo mount -o ro "$part" "$dir_name" 2>/dev/null || true
+        fi
+    done
 
+    # 4. Generar configuración de GRUB (ahora os-prober verá todo)
+    echo "==> Generando configuración de GRUB..."
+    sudo grub-mkconfig -o /boot/grub/grub.cfg
+
+    # 5. Desmontar y limpiar la basura temporal
+    echo "==> Limpiando montajes temporales..."
+    for dir in /tmp/win_mounts/*; do
+        if [ -d "$dir" ]; then
+            sudo umount "$dir" 2>/dev/null || true
+        fi
+    done
+    sudo rm -rf /tmp/win_mounts
+
+    echo "==> GRUB configurado con éxito."
+}
 
 # ==========================================
 # 2. EJECUCIÓN PRINCIPAL (PANEL DE CONTROL)
