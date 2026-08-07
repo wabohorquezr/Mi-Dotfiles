@@ -113,25 +113,29 @@ limpiar_sistema() {
 }
 
 configurar_grub() {
-    echo "==> Configurando GRUB para Dual-Boot (Universal)..."
+    echo "==> Configurando GRUB para Dual-Boot (Universal y Forzado a UEFI)..."
     
-    # 1. Instalar dependencias
-    sudo pacman -S --needed --noconfirm os-prober ntfs-3g
+    # 1. Instalar dependencias (se añade grub y efibootmgr para la instalación UEFI)
+    sudo pacman -S --needed --noconfirm grub efibootmgr os-prober ntfs-3g
 
-    # 2. Habilitar os-prober en /etc/default/grub
+    # 2. Forzar instalación de GRUB en modo UEFI en la partición /boot
+    echo "==> Instalando GRUB en la partición EFI..."
+    sudo grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
+
+    # 3. Habilitar os-prober en /etc/default/grub
     if grep -q "^#GRUB_DISABLE_OS_PROBER=false" /etc/default/grub; then
         sudo sed -i 's/^#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
     elif ! grep -q "^GRUB_DISABLE_OS_PROBER=false" /etc/default/grub; then
         echo "GRUB_DISABLE_OS_PROBER=false" | sudo tee -a /etc/default/grub
     fi
 
-    # 3. Intentar generar GRUB normalmente
+    # 4. Intentar generar GRUB normalmente
     echo "==> Escaneando sistemas operativos..."
     sudo grub-mkconfig -o /boot/grub/grub.cfg > /tmp/grub_output.txt 2>&1
 
-    # 4. Verificar si os-prober falló al detectar Windows
+    # 5. Verificar si os-prober falló al detectar Windows
     if ! grep -iq "Windows" /tmp/grub_output.txt; then
-        echo "--> os-prober no detectó Windows. Buscando partición EFI de Windows manualmente..."
+        echo "--> os-prober no detectó Windows. Buscando partición EFI manualmente..."
         
         WIN_UUID=""
         sudo mkdir -p /tmp/efi_scan
@@ -146,7 +150,7 @@ configurar_grub() {
                 mounted=true
                 scan_dir="/tmp/efi_scan"
             else
-                # Si ya está montada (ej. tu /boot), leemos su ruta
+                # Si ya está montada, leemos su ruta
                 scan_dir=$(lsblk -lno MOUNTPOINT "$part" | grep -v "^$")
             fi
             
@@ -168,11 +172,11 @@ configurar_grub() {
         
         sudo rm -rf /tmp/efi_scan
 
-        # 5. Inyectar Windows si se encontró el UUID
+        # 6. Inyectar Windows si se encontró el UUID
         if [ -n "$WIN_UUID" ]; then
             echo "==> Inyectando entrada manual para Windows en GRUB..."
             
-            # Limpiar entradas previas en 40_custom para no duplicarlas si corres el script 2 veces
+            # Limpiar entradas previas en 40_custom para no duplicarlas
             sudo sed -i '/menuentry "Windows 10/,/}/d' /etc/grub.d/40_custom
             
             # Escribir la nueva entrada con el UUID detectado automáticamente
@@ -196,7 +200,7 @@ EOF
     fi
     
     rm -f /tmp/grub_output.txt
-    echo "==> GRUB configurado con éxito."
+    echo "==> GRUB configurado con éxito en modo UEFI."
 }
 
 # ==========================================
