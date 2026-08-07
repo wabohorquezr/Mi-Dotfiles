@@ -113,7 +113,7 @@ limpiar_sistema() {
 }
 
 configurar_grub() {
-    echo "==> Configurando GRUB para Dual-Boot de forma automática..."
+    echo "==> Configurando GRUB para Dual-Boot (Universal)..."
     
     # 1. Instalar dependencias
     sudo pacman -S --needed --noconfirm os-prober ntfs-3g
@@ -125,34 +125,77 @@ configurar_grub() {
         echo "GRUB_DISABLE_OS_PROBER=false" | sudo tee -a /etc/default/grub
     fi
 
-    # 3. Forzar el montaje de TODAS las particiones de Windows/EFI
-    echo "==> Escaneando y montando particiones temporalmente para forzar detección..."
-    sudo mkdir -p /tmp/win_mounts
+    # 3. Intentar generar GRUB normalmente
+    echo "==> Escaneando sistemas operativos..."
+    sudo grub-mkconfig -o /boot/grub/grub.cfg > /tmp/grub_output.txt 2>&1
+
+    # 4. Verificar si os-prober falló al detectar Windows
+    if ! grep -iq "Windows" /tmp/grub_output.txt; then
+        echo "--> os-prober no detectó Windows. Buscando partición EFI de Windows manualmente..."
+        
+        WIN_UUID=""
+        sudo mkdir -p /tmp/efi_scan
+        
+        # Escanear todas las particiones vfat (FAT32) en todos los discos
+        for part in $(lsblk -lno PATH,FSTYPE | grep -i 'vfat' | awk '{print $1}'); do
+            mounted=false
+            
+            # Si no está montada, la montamos temporalmente
+            if ! grep -q "^$part " /proc/mounts; then
+                sudo mount -o ro "$part" /tmp/efi_scan 2>/dev/null
+                mounted=true
+                scan_dir="/tmp/efi_scan"
+            else
+                # Si ya está montada (ej. tu /boot), leemos su ruta
+                scan_dir=$(lsblk -lno MOUNTPOINT "$part" | grep -v "^$")
+            fi
+            
+            # Buscar el archivo exacto de arranque de Windows
+            if [ -f "$scan_dir/EFI/Microsoft/Boot/bootmgfw.efi" ] || [ -f "$scan_dir/efi/microsoft/boot/bootmgfw.efi" ]; then
+                WIN_UUID=$(sudo blkid -s UUID -o value "$part")
+                echo "--> ¡Windows encontrado en $part con UUID: $WIN_UUID!"
+                
+                if [ "$mounted" = true ]; then
+                    sudo umount /tmp/efi_scan 2>/dev/null
+                fi
+                break
+            fi
+            
+            if [ "$mounted" = true ]; then
+                sudo umount /tmp/efi_scan 2>/dev/null
+            fi
+        done
+        
+        sudo rm -rf /tmp/efi_scan
+
+        # 5. Inyectar Windows si se encontró el UUID
+        if [ -n "$WIN_UUID" ]; then
+            echo "==> Inyectando entrada manual para Windows en GRUB..."
+            
+            # Limpiar entradas previas en 40_custom para no duplicarlas si corres el script 2 veces
+            sudo sed -i '/menuentry "Windows 10/,/}/d' /etc/grub.d/40_custom
+            
+            # Escribir la nueva entrada con el UUID detectado automáticamente
+            cat <<EOF | sudo tee -a /etc/grub.d/40_custom
+menuentry "Windows 10" {
+    insmod part_gpt
+    insmod fat
+    insmod chain
+    search --no-floppy --fs-uuid --set=root $WIN_UUID
+    chainloader /EFI/Microsoft/Boot/bootmgfw.efi
+}
+EOF
+            # Regenerar GRUB para aplicar la entrada inyectada
+            sudo grub-mkconfig -o /boot/grub/grub.cfg > /dev/null 2>&1
+            echo "--> Entrada manual creada y aplicada con éxito."
+        else
+            echo "--> No se encontró ninguna instalación de Windows en este equipo."
+        fi
+    else
+        echo "--> os-prober detectó Windows exitosamente."
+    fi
     
-    # Busca particiones vfat (donde está el EFI de Windows) y ntfs
-    for part in $(lsblk -lno PATH,FSTYPE | grep -E 'vfat|ntfs' | awk '{print $1}'); do
-        # Solo monta si la partición no está ya montada por el sistema (evita chocar con la EFI de Arch)
-        if ! grep -q "$part" /proc/mounts; then
-            dir_name="/tmp/win_mounts/$(basename $part)"
-            sudo mkdir -p "$dir_name"
-            # Se monta como 'ro' (solo lectura) para evitar errores si Windows tiene Inicio Rápido activado
-            sudo mount -o ro "$part" "$dir_name" 2>/dev/null || true
-        fi
-    done
-
-    # 4. Generar configuración de GRUB (ahora os-prober verá todo)
-    echo "==> Generando configuración de GRUB..."
-    sudo grub-mkconfig -o /boot/grub/grub.cfg
-
-    # 5. Desmontar y limpiar la basura temporal
-    echo "==> Limpiando montajes temporales..."
-    for dir in /tmp/win_mounts/*; do
-        if [ -d "$dir" ]; then
-            sudo umount "$dir" 2>/dev/null || true
-        fi
-    done
-    sudo rm -rf /tmp/win_mounts
-
+    rm -f /tmp/grub_output.txt
     echo "==> GRUB configurado con éxito."
 }
 
