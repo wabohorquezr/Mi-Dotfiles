@@ -112,6 +112,32 @@ limpiar_sistema() {
     echo "================================================="
 }
 
+configurar_grub() {
+    echo "==> Configurando GRUB (Dual-Boot y Tema)..."
+    
+    # 1. Habilitar os-prober para detectar Windows
+    if grep -q "^#GRUB_DISABLE_OS_PROBER=false" /etc/default/grub; then
+        sudo sed -i 's/^#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
+    elif ! grep -q "^GRUB_DISABLE_OS_PROBER=false" /etc/default/grub; then
+        echo "GRUB_DISABLE_OS_PROBER=false" | sudo tee -a /etc/default/grub
+    fi
+
+    # 2. Descargar e instalar tema Catppuccin
+    git clone --depth 1 https://github.com/catppuccin/grub.git /tmp/grub-theme
+    sudo mkdir -p /boot/grub/themes
+    sudo cp -r /tmp/grub-theme/src/mocha /boot/grub/themes/catppuccin-mocha
+    
+    if ! grep -q "^GRUB_THEME=" /etc/default/grub; then
+        echo 'GRUB_THEME="/boot/grub/themes/catppuccin-mocha/theme.txt"' | sudo tee -a /etc/default/grub
+    else
+        sudo sed -i 's|^GRUB_THEME=.*|GRUB_THEME="/boot/grub/themes/catppuccin-mocha/theme.txt"|' /etc/default/grub
+    fi
+    rm -rf /tmp/grub-theme
+
+    # 3. Aplicar cambios
+    sudo grub-mkconfig -o /boot/grub/grub.cfg
+}
+
 
 # ==========================================
 # 2. EJECUCIÓN PRINCIPAL (PANEL DE CONTROL)
@@ -125,5 +151,6 @@ desplegar_configuraciones
 instalar_entorno_aur
 instalar_nvchad
 instalar_cursores
+configurar_grub
 configurar_shell
 limpiar_sistema
