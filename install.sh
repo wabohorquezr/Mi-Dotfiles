@@ -93,28 +93,23 @@ mkdir -p "$HOME/Pictures/Screenshots"
 
 chmod +x "$HOME/.config/ranger/scope.sh"
 
-
-# --- Instalación del Cursor Oreo ---
+# --- Instalación del Cursor Oreo (Pre-compilado) ---
 echo "Instalando tema de cursor Oreo..."
 mkdir -p "$HOME/.local/share/icons"
 
 TMP_OREO="/tmp/oreo-cursors"
 rm -rf "$TMP_OREO"
 
-# Clonación rápida del repositorio
-git clone --depth 1 https://github.com/varlesh/oreo-cursors.git "$TMP_OREO"
+# Clonar repositorio con binarios de cursores ya listos
+git clone --depth 1 https://github.com/milkmadedev/oreo-cursors-compiled.git "$TMP_OREO"
 
-# Copiar todas las variantes de Oreo disponibles en dist/
-if [ -d "$TMP_OREO/dist" ]; then
-    cp -r "$TMP_OREO"/dist/* "$HOME/.local/share/icons/"
-else
-    # Respaldo por si los archivos están en la raíz
-    cp -r "$TMP_OREO"/oreo_* "$HOME/.local/share/icons/" 2>/dev/null || true
-fi
+# Copiar las carpetas de cursores (oreo_white_cursors, oreo_black_cursors, etc.)
+cp -r "$TMP_OREO"/oreo_* "$HOME/.local/share/icons/"
 
 # Limpieza
 rm -rf "$TMP_OREO"
 
-echo "Cursor Oreo instalado en ~/.local/share/icons/"
+echo "Cursores Oreo instalados exitosamente en ~/.local/share/icons/"
+
 
 chsh -s "$(which zsh)"
