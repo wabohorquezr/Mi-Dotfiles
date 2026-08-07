@@ -3,6 +3,10 @@
 #!/bin/bash
 
 PKGS=(
+    grub
+    efibootmgr
+    os-prober
+    ntfs-3g
     grim 
     slurp 
     jq 
