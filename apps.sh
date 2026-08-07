@@ -3,6 +3,11 @@
 #!/bin/bash
 
 PKGS=(
+    grim 
+    slurp 
+    jq 
+    mako 
+    libnotify
     zathura-pdf-mupdf
     vlc
     wl-clipboard
