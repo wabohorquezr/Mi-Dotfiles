@@ -93,4 +93,16 @@ mkdir -p "$HOME/Pictures/Screenshots"
 
 chmod +x "$HOME/.config/ranger/scope.sh"
 
+
+# --- Instalación del Cursor Oreo ---
+echo "Instalando tema de cursor Oreo..."
+mkdir -p "$HOME/.local/share/icons"
+
+# Descarga y extrae directamente la variante oreo_white_cursors
+curl -sL https://github.com/varlesh/oreo-cursors/archive/refs/heads/master.tar.gz | tar -xz -C /tmp
+cp -r /tmp/oreo-cursors-master/dist/oreo_white_cursors "$HOME/.local/share/icons/"
+rm -rf /tmp/oreo-cursors-master
+
+echo "Cursor Oreo instalado en ~/.local/share/icons/"
+
 chsh -s "$(which zsh)"
