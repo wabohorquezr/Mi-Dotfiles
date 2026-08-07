@@ -122,17 +122,22 @@ configurar_grub() {
         echo "GRUB_DISABLE_OS_PROBER=false" | sudo tee -a /etc/default/grub
     fi
 
-    # 2. Descargar e instalar tema Catppuccin
-    git clone --depth 1 https://github.com/catppuccin/grub.git /tmp/grub-theme
-    sudo mkdir -p /boot/grub/themes
-    sudo cp -r /tmp/grub-theme/src/mocha /boot/grub/themes/catppuccin-mocha
+    # 2. Limpiar carpeta temporal y descargar el tema
+    TMP_GRUB_THEME="/tmp/grub-theme"
+    rm -rf "$TMP_GRUB_THEME"
+    git clone --depth 1 https://github.com/catppuccin/grub.git "$TMP_GRUB_THEME"
     
+    sudo mkdir -p /boot/grub/themes
+    sudo cp -r "$TMP_GRUB_THEME/src/mocha" /boot/grub/themes/catppuccin-mocha
+    
+    # Asignar tema en la configuración
     if ! grep -q "^GRUB_THEME=" /etc/default/grub; then
         echo 'GRUB_THEME="/boot/grub/themes/catppuccin-mocha/theme.txt"' | sudo tee -a /etc/default/grub
     else
         sudo sed -i 's|^GRUB_THEME=.*|GRUB_THEME="/boot/grub/themes/catppuccin-mocha/theme.txt"|' /etc/default/grub
     fi
-    rm -rf /tmp/grub-theme
+    
+    rm -rf "$TMP_GRUB_THEME"
 
     # 3. Aplicar cambios
     sudo grub-mkconfig -o /boot/grub/grub.cfg
