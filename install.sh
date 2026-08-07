@@ -98,10 +98,22 @@ chmod +x "$HOME/.config/ranger/scope.sh"
 echo "Instalando tema de cursor Oreo..."
 mkdir -p "$HOME/.local/share/icons"
 
-# Descarga y extrae directamente la variante oreo_white_cursors
-curl -sL https://github.com/varlesh/oreo-cursors/archive/refs/heads/master.tar.gz | tar -xz -C /tmp
-cp -r /tmp/oreo-cursors-master/dist/oreo_white_cursors "$HOME/.local/share/icons/"
-rm -rf /tmp/oreo-cursors-master
+TMP_OREO="/tmp/oreo-cursors"
+rm -rf "$TMP_OREO"
+
+# Clonación rápida del repositorio
+git clone --depth 1 https://github.com/varlesh/oreo-cursors.git "$TMP_OREO"
+
+# Copiar todas las variantes de Oreo disponibles en dist/
+if [ -d "$TMP_OREO/dist" ]; then
+    cp -r "$TMP_OREO"/dist/* "$HOME/.local/share/icons/"
+else
+    # Respaldo por si los archivos están en la raíz
+    cp -r "$TMP_OREO"/oreo_* "$HOME/.local/share/icons/" 2>/dev/null || true
+fi
+
+# Limpieza
+rm -rf "$TMP_OREO"
 
 echo "Cursor Oreo instalado en ~/.local/share/icons/"
 
