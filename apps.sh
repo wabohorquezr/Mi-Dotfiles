@@ -3,6 +3,7 @@
 #!/bin/bash
 
 PKGS=(
+    zsh
     grub
     efibootmgr
     os-prober
