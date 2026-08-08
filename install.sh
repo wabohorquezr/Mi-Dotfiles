@@ -113,94 +113,20 @@ limpiar_sistema() {
 }
 
 configurar_grub() {
-    echo "==> Configurando GRUB para Dual-Boot (Universal y Forzado a UEFI)..."
+    echo "==> Configurando GRUB para Dual-Boot..."
     
-    # 1. Instalar dependencias (se añade grub y efibootmgr para la instalación UEFI)
-    sudo pacman -S --needed --noconfirm grub efibootmgr os-prober ntfs-3g
+    # 1. Asegurar que os-prober y ntfs-3g estén instalados
+    sudo pacman -S --needed --noconfirm os-prober ntfs-3g
 
-    # 2. Forzar instalación de GRUB en modo UEFI en la partición /boot
-    echo "==> Instalando GRUB en la partición EFI..."
-    sudo grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
-
-    # 3. Habilitar os-prober en /etc/default/grub
+    # 2. Habilitar os-prober en /etc/default/grub
     if grep -q "^#GRUB_DISABLE_OS_PROBER=false" /etc/default/grub; then
         sudo sed -i 's/^#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
     elif ! grep -q "^GRUB_DISABLE_OS_PROBER=false" /etc/default/grub; then
         echo "GRUB_DISABLE_OS_PROBER=false" | sudo tee -a /etc/default/grub
     fi
 
-    # 4. Intentar generar GRUB normalmente
-    echo "==> Escaneando sistemas operativos..."
-    sudo grub-mkconfig -o /boot/grub/grub.cfg > /tmp/grub_output.txt 2>&1
-
-    # 5. Verificar si os-prober falló al detectar Windows
-    if ! grep -iq "Windows" /tmp/grub_output.txt; then
-        echo "--> os-prober no detectó Windows. Buscando partición EFI manualmente..."
-        
-        WIN_UUID=""
-        sudo mkdir -p /tmp/efi_scan
-        
-        # Escanear todas las particiones vfat (FAT32) en todos los discos
-        for part in $(lsblk -lno PATH,FSTYPE | grep -i 'vfat' | awk '{print $1}'); do
-            mounted=false
-            
-            # Si no está montada, la montamos temporalmente
-            if ! grep -q "^$part " /proc/mounts; then
-                sudo mount -o ro "$part" /tmp/efi_scan 2>/dev/null
-                mounted=true
-                scan_dir="/tmp/efi_scan"
-            else
-                # Si ya está montada, leemos su ruta
-                scan_dir=$(lsblk -lno MOUNTPOINT "$part" | grep -v "^$")
-            fi
-            
-            # Buscar el archivo exacto de arranque de Windows
-            if [ -f "$scan_dir/EFI/Microsoft/Boot/bootmgfw.efi" ] || [ -f "$scan_dir/efi/microsoft/boot/bootmgfw.efi" ]; then
-                WIN_UUID=$(sudo blkid -s UUID -o value "$part")
-                echo "--> ¡Windows encontrado en $part con UUID: $WIN_UUID!"
-                
-                if [ "$mounted" = true ]; then
-                    sudo umount /tmp/efi_scan 2>/dev/null
-                fi
-                break
-            fi
-            
-            if [ "$mounted" = true ]; then
-                sudo umount /tmp/efi_scan 2>/dev/null
-            fi
-        done
-        
-        sudo rm -rf /tmp/efi_scan
-
-        # 6. Inyectar Windows si se encontró el UUID
-        if [ -n "$WIN_UUID" ]; then
-            echo "==> Inyectando entrada manual para Windows en GRUB..."
-            
-            # Limpiar entradas previas en 40_custom para no duplicarlas
-            sudo sed -i '/menuentry "Windows 10/,/}/d' /etc/grub.d/40_custom
-            
-            # Escribir la nueva entrada con el UUID detectado automáticamente
-            cat <<EOF | sudo tee -a /etc/grub.d/40_custom
-menuentry "Windows 10" {
-    insmod part_gpt
-    insmod fat
-    insmod chain
-    search --no-floppy --fs-uuid --set=root $WIN_UUID
-    chainloader /EFI/Microsoft/Boot/bootmgfw.efi
-}
-EOF
-            # Regenerar GRUB para aplicar la entrada inyectada
-            sudo grub-mkconfig -o /boot/grub/grub.cfg > /dev/null 2>&1
-            echo "--> Entrada manual creada y aplicada con éxito."
-        else
-            echo "--> No se encontró ninguna instalación de Windows en este equipo."
-        fi
-    else
-        echo "--> os-prober detectó Windows exitosamente."
-    fi
-    
-    rm -f /tmp/grub_output.txt
-    echo "==> GRUB configurado con éxito en modo UEFI."
+    # 3. Regenerar entradas de GRUB
+    sudo grub-mkconfig -o /boot/grub/grub.cfg
 }
 
 # ==========================================
