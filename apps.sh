@@ -3,6 +3,8 @@
 #!/bin/bash
 
 PKGS=(
+    python-pillow
+    ranger
     zsh
     grub
     efibootmgr
