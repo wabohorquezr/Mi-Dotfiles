@@ -28,6 +28,10 @@ PKGS=(
     octave
     impala
     bluetui
+    ark 
+    unzip
+    unrar
+    p7zip
     network-manager-applet
     brightnessctl
     awww
