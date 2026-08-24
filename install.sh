@@ -72,6 +72,7 @@ instalar_entorno_aur() {
         zen-browser-bin
         ltspice
         slack-desktop
+        elecwhat-bin
     )
     yay -S --needed --noconfirm "${PKGSYAY[@]}"
     echo "--> Aplicaciones de AUR instaladas correctamente."
