@@ -73,6 +73,7 @@ instalar_entorno_aur() {
         ltspice
         slack-desktop
         elecwhat-bin
+        qucs-s
     )
     yay -S --needed --noconfirm "${PKGSYAY[@]}"
     echo "--> Aplicaciones de AUR instaladas correctamente."
