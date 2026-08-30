@@ -18,6 +18,7 @@ PKGS=(
     zathura-pdf-mupdf
     vlc
     wl-clipboard
+    cliphist
     waybar
     rofi
     kitty
