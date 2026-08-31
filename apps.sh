@@ -25,6 +25,7 @@ PKGS=(
     git
     rsync
     julia
+    inkscape
     neovim
     octave
     impala
