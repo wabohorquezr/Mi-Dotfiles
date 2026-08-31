@@ -69,7 +69,6 @@ instalar_entorno_aur() {
 
     echo "==> Instalando apps de AUR..."
     PKGSYAY=(
-        zen-browser-bin
         ltspice
         slack-desktop
         elecwhat-bin
