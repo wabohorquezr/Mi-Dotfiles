@@ -50,6 +50,49 @@ desplegar_configuraciones() {
     chmod +x "$HOME/.config/ranger/scope.sh"
 }
 
+configurar_aplicaciones_predeterminadas() {
+    echo "==> Configurando aplicaciones predeterminadas del sistema..."
+    
+    # 1. Asegurar la existencia del directorio de aplicaciones del usuario
+    mkdir -p "$HOME/.local/share/applications"
+
+    # 2. Configurar el navegador web principal con xdg-settings
+    if command -v xdg-settings >/dev/null 2>&1; then
+        xdg-settings set default-web-browser firefox.desktop
+    fi
+
+    # 3. Mapear tipos MIME con xdg-mime
+    if command -v xdg-mime >/dev/null 2>&1; then
+        # Firefox (Web y HTML)
+        xdg-mime default firefox.desktop x-scheme-handler/http
+        xdg-mime default firefox.desktop x-scheme-handler/https
+        xdg-mime default firefox.desktop text/html
+        xdg-mime default firefox.desktop application/xhtml+xml
+
+        # Zathura (Documentos PDF)
+        xdg-mime default org.pwmt.zathura.desktop application/pdf
+
+        # VLC (Videos y Audio)
+        xdg-mime default vlc.desktop video/mp4
+        xdg-mime default vlc.desktop video/x-matroska
+        xdg-mime default vlc.desktop video/quicktime
+        xdg-mime default vlc.desktop audio/mpeg
+        xdg-mime default vlc.desktop audio/x-wav
+
+        # Ranger (Directorios / Carpetas)
+        xdg-mime default ranger.desktop inode/directory
+
+        # Neovim (Archivos de texto plano y código)
+        xdg-mime default nvim.desktop text/plain
+        xdg-mime default nvim.desktop text/markdown
+        xdg-mime default nvim.desktop application/x-shellscript
+    else
+        echo "Aviso: xdg-utils no está instalado. Saltando asociaciones MIME."
+    fi
+    echo "--> Aplicaciones predeterminadas vinculadas correctamente."
+}
+
+
 instalar_entorno_aur() {
     echo "==> Configurando directorios de usuario (xdg-user-dirs)..."
     sudo pacman -S --needed --noconfirm xdg-user-dirs
@@ -145,4 +188,5 @@ instalar_nvchad
 instalar_cursores
 configurar_grub
 configurar_shell
+configurar_aplicaciones_predeterminadas
 limpiar_sistema
