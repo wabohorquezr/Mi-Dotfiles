@@ -14,6 +14,7 @@ PKGS=(
     slurp 
     jq 
     mako 
+    discord
     libnotify
     zathura-pdf-mupdf
     vlc
