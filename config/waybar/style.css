@@ -66,10 +66,25 @@ window#waybar {
     color: #ffffff;
 }
 
+/* --- CONTENEDOR DEL GRUPO INVISIBLE --- */
+/* Esto evita que se forme una barra gigante y permite óvalos separados */
+#group-power {
+    background-color: transparent;
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+/* --- DISEÑO DE CADA ÓVALO INDIVIDUAL --- */
 #clock,
 #pulseaudio,
-#network,
-#battery {
+#battery,
+#custom-power,
+#custom-quit,
+#custom-lock,
+#custom-suspend,
+#custom-reboot,
+#custom-shutdown {
     padding: 0 10px;
     margin: 5px 6px;
     background-color: #f0f0f0;
@@ -79,9 +94,21 @@ window#waybar {
     transition: all 0.3s ease;
 }
 
+/* EFECTO HOVER PARA TODOS LOS ÓVALOS */
 #clock:hover,
 #pulseaudio:hover,
-/* Estilo base de red */
+#custom-power:hover,
+#custom-quit:hover,
+#custom-lock:hover,
+#custom-suspend:hover,
+#custom-reboot:hover,
+#custom-shutdown:hover {
+    background-color: #252525;
+    color: #ffffff;
+    border: 1px solid #ffffff;
+}
+
+/* --- ESTILOS DE RED --- */
 #network {
     padding: 0 10px;
     margin: 5px 6px;
@@ -89,34 +116,31 @@ window#waybar {
     transition: all 0.3s ease;
 }
 
-/* Conectado por Wi-Fi */
 #network.wifi {
     background-color: #f0f0f0;
     color: #000000;
     border: 1px solid transparent;
 }
 
-/* Conectado por Cable Ethernet */
 #network.ethernet {
     background-color: #252525;
     color: #ffffff;
     border: 1px solid #ffffff;
 }
 
-/* Desconectado */
 #network.disconnected {
     background-color: #3b1818;
     color: #ff5555;
     border: 1px solid #ff5555;
 }
 
-/* Tu efecto hover para todos los estados */
 #network:hover {
     background-color: #252525;
     color: #ffffff;
     border: 1px solid #ffffff;
 }
 
+/* --- OTROS MÓDULOS --- */
 #custom-playerctl,
 #custom-memory {
     padding: 5px 10px;
