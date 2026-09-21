@@ -3,42 +3,52 @@
 #!/bin/bash
 
 PKGS=(
+    ark
+    brightnessctl
+    cliphist
+    discord
+    efibootmgr
+    git
+    graphviz                 # Contiene dot
+    grim
+    grub
+    gtkwave
+    icestorm                 # Contiene iceprog
+    inkscape
+    iverilog
+    jq
+    julia
+    kitty
+    libnotify
+    lite-xl
+    mako
+    neovim
+    network-manager-applet
+    nextpnr                  # Contiene nextpnr-ice40
+    ngspice
+    ntfs-3g
+    octave
+    openfpgaloader           # Para openFPGALoader
+    os-prober
+    p7zip
+    picocom
+    pulseview
     python-pillow
     ranger
-    zsh
-    grub
-    efibootmgr
-    os-prober
-    ntfs-3g
-    grim 
-    slurp 
-    jq 
-    mako 
-    discord
-    libnotify
-    zathura-pdf-mupdf
-    vlc
-    wl-clipboard
-    cliphist
-    waybar
+    riscv64-elf-gcc          # Toolchain RISC-V (nombre oficial en Arch)
     rofi
-    kitty
-    git
     rsync
-    julia
-    inkscape
-    neovim
-    octave
-    impala
-    bluetui
-    ark 
-    unzip
-    unrar
-    p7zip
-    network-manager-applet
-    brightnessctl
-    awww
+    slurp
     ttf-jetbrains-mono-nerd
+    unrar
+    unzip
+    verilator
+    vlc
+    waybar
+    wl-clipboard
+    yosys
+    zathura-pdf-mupdf
+    zsh
 )
 echo "Instalando paquetes..."
 
