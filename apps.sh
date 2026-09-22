@@ -3,6 +3,7 @@
 #!/bin/bash
 
 PKGS=(
+    rsync
     ark
     brightnessctl
     cliphist
