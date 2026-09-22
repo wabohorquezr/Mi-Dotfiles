@@ -51,7 +51,7 @@
     "format-linked": "󰈀 Sin IP",
     "format-disconnected": "󰤭 Desconectado",
     "format-alt": "{bandwidthDownBits} ↓",
-    "on-click": "kitty -e nmtui"
+    "on-click": "kitty -e impala"
   },
   "custom/memory": {
     "interval": 5,
