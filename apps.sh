@@ -3,6 +3,7 @@
 #!/bin/bash
 
 PKGS=(
+    zsh
     rsync
     ark
     brightnessctl
@@ -49,7 +50,6 @@ PKGS=(
     wl-clipboard
     yosys
     zathura-pdf-mupdf
-    zsh
 )
 echo "Instalando paquetes..."
 
