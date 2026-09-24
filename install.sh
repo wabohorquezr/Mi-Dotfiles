@@ -48,6 +48,7 @@ desplegar_configuraciones() {
     echo "==> Asignando permisos de ejecución..."
     chmod +x ~/.config/rofi/scripts/wallpaper.sh
     chmod +x "$HOME/.config/ranger/scope.sh"
+    chmod +x ~/.config/rofi/scripts/menu-atajos.sh
 }
 
 configurar_aplicaciones_predeterminadas() {
