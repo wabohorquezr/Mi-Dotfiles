@@ -1,0 +1,9 @@
+
+Ranger: Ordenar por fecha (más reciente)  | om
+Ranger: Ordenar por fecha (más antiguo)   | oM
+Ranger: Ordenar por tamaño                | os
+Ranger: Mostrar archivos ocultos          | zh
+Ranger: Abrir archivo con programa alt.   | r
+Ranger: Abrir consola de comandos         | :
+Hyprland: Cerrar ventana                  | Super + Q
+Kitty: Nueva pestaña                      | Ctrl + Shift + T
