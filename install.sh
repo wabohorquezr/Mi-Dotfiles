@@ -157,38 +157,36 @@ limpiar_sistema() {
     echo " ¡Instalación de Dotfiles completada con éxito!"
     echo "================================================="
 }
-configurar_grub() {
-    echo "==> Configurando GRUB para Dual-Boot y reparando kernels..."
-    
-    # 1. Asegurar dependencias
-    sudo pacman -S --needed --noconfirm os-prober ntfs-3g mkinitcpio
 
-    # 2. Habilitar os-prober en /etc/default/grub (Para Windows)
+configurar_grub() {
+    echo "==> Restaurando GRUB (1 Arch, 1 Windows, 1 UEFI)..."
+
+    # 1. REPARAR EL KERNEL ROTO (Pantallazo azul)
+    # Reinstalar 'linux' fuerza a generar los archivos faltantes correctamente
+    sudo pacman -S --noconfirm os-prober ntfs-3g linux mkinitcpio
+    sudo mkinitcpio -P
+
+    # 2. MANTENER OS-PROBER ENCENDIDO (Para detectar Windows)
     if grep -q "^#GRUB_DISABLE_OS_PROBER=false" /etc/default/grub; then
         sudo sed -i 's/^#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
     elif ! grep -q "^GRUB_DISABLE_OS_PROBER=false" /etc/default/grub; then
         echo "GRUB_DISABLE_OS_PROBER=false" | sudo tee -a /etc/default/grub
     fi
 
-    # 3. SOLUCIÓN AL "KERNEL PANIC" EN LA PANTALLA PRINCIPAL:
-    # Agrupar kernels adicionales en el submenú "Advanced options".
-    # Esto asegura que solo haya un "Arch Linux" principal (el más reciente/funcional).
+    # 3. EVITAR EL ARCH DUPLICADO
+    # Le quitamos el permiso a os-prober de buscar Linux, así solo buscará Windows
+    if [ -f /usr/lib/os-probes/mounted/90linux-distro ]; then
+        sudo chmod -x /usr/lib/os-probes/mounted/90linux-distro
+    fi
+
+    # 4. Agrupar opciones extra en "Advanced options"
     sudo sed -i 's/^GRUB_DISABLE_SUBMENU=y/#GRUB_DISABLE_SUBMENU=y/' /etc/default/grub
 
-    # 4. REPARAR EL INITRAMFS FALTANTE:
-    # Esto soluciona el "Kernel Panic: VFS: Unable to mount root fs"
-    echo "==> Regenerando initramfs para todos los kernels..."
-    sudo mkinitcpio -P
-
-    # 5. Desactivar scripts de backup duplicados
-    sudo find /etc/grub.d -type f -name "*.bak" -exec chmod -x {} \;
-    sudo find /etc/grub.d -type f -name "*~" -exec chmod -x {} \;
-
-    # 6. Regenerar el archivo GRUB
+    # 5. Generar GRUB base
     sudo grub-mkconfig -o /boot/grub/grub.cfg
 
-    # 7. Limpiar la basura "EFI BootNext" del archivo final
-    echo "==> Limpiando entradas fantasmas del menú..."
+    # 6. LIMPIAR LA BASURA "EFI BootNext"
+    echo "--> Limpiando spam de la placa base..."
     sudo awk '
     BEGIN { skip=0; braces=0 }
     /^[[:space:]]*menuentry .*(EFI BootNext|VendorCoProductCode|Network Device)/ { skip=1 }
@@ -202,7 +200,7 @@ configurar_grub() {
     
     sudo mv /tmp/grub_limpio.cfg /boot/grub/grub.cfg
 
-    echo "--> GRUB configurado, initramfs reparado y menú limpio."
+    echo "--> ¡Listo! GRUB restaurado a la normalidad."
 }
 
 # ==========================================
