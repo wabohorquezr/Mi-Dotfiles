@@ -159,37 +159,36 @@ limpiar_sistema() {
 }
 
 configurar_grub() {
-    echo "==> Reparando y limpiando GRUB..."
+    echo "==> Generando GRUB y eliminando la opción de Arch que falla..."
 
-    # 1. Asegurar paquetes base y reconstruir archivos de arranque
-    sudo pacman -S --needed --noconfirm os-prober ntfs-3g linux mkinitcpio
-    sudo mkinitcpio -P
-
-    # 2. ELIMINAR EL KERNEL ROTO (Soluciona el "Arch de arriba" que falla)
-    # Busca archivos de kernel residuales que no tengan su imagen .img y los borra
-    for kernel in /boot/vmlinuz-*; do
-        [ -e "$kernel" ] || continue
-        initramfs="/boot/initramfs-${kernel#/boot/vmlinuz-}.img"
-        if [ ! -f "$initramfs" ]; then
-            sudo rm -f "$kernel"
-        fi
-    done
-
-    # 3. Configurar GRUB base (Habilitar Windows y ocultar opciones extra de Arch)
+    # 1. Instalar dependencias y habilitar os-prober para Windows
+    sudo pacman -S --needed --noconfirm os-prober ntfs-3g
     sudo sed -i 's/.*GRUB_DISABLE_OS_PROBER.*/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
-    sudo sed -i 's/.*GRUB_DISABLE_SUBMENU.*/#GRUB_DISABLE_SUBMENU=y/' /etc/default/grub
 
-    # 4. Regenerar archivo de menú
+    # 2. Generar la configuración de GRUB
     sudo grub-mkconfig -o /boot/grub/grub.cfg
 
-    # 5. LIMPIAR EL SPAM DE LA PLACA BASE (Método ultra simple con sed)
-    # Borra los bloques de texto basura para dejar solo lo importante
-    sudo sed -i '/EFI BootNext/ , /^[[:space:]]*}/d' /boot/grub/grub.cfg
-    sudo sed -i '/VendorCoProductCode/ , /^[[:space:]]*}/d' /boot/grub/grub.cfg
-    sudo sed -i '/Network Device/ , /^[[:space:]]*}/d' /boot/grub/grub.cfg
-    sudo sed -i '/CD\/DVD Drive/ , /^[[:space:]]*}/d' /boot/grub/grub.cfg
+    # 3. BORRAR LA OPCIÓN ROTA DE ARCH Y EL SPAM UEFI
+    sudo python3 -c '
+import re
 
-    echo "--> ¡Listo! GRUB restaurado a 1 Arch, 1 Windows, 1 UEFI."
+with open("/boot/grub/grub.cfg", "r") as f:
+    cfg = f.read()
+
+# Eliminar entradas basura de la tarjeta madre (EFI BootNext, Network, etc.)
+cfg = re.sub(r"menuentry \x27[^\x27]*(EFI BootNext|VendorCo|Network Device|CD/DVD)[^\x27]*\x27 [^{]*\{[^}]*\}\n?", "", cfg)
+
+# Si hay duplicados de "Arch Linux", borrar el primero (el que da Kernel Panic)
+matches = list(re.finditer(r"menuentry \x27Arch Linux\x27 [^{]*\{.*?\n\}", cfg, re.DOTALL))
+if len(matches) > 1:
+    start, end = matches[0].span()
+    cfg = cfg[:start] + cfg[end:]
+
+with open("/boot/grub/grub.cfg", "w") as f:
+    f.write(cfg)
+'
+
+    echo "--> Entrada rota eliminada. Menú limpiado correctamente."
 }
 
 # ==========================================
