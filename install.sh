@@ -157,31 +157,32 @@ limpiar_sistema() {
     echo " ¡Instalación de Dotfiles completada con éxito!"
     echo "================================================="
 }
-
 configurar_grub() {
-    echo "==> Configurando GRUB y reparando arranque..."
+    echo "==> Forzando GRUB limpio (1 Arch, 1 Windows, 1 UEFI)..."
 
-    # 1. REPARAR EL KERNEL: Reconstruye las imágenes de arranque forzosamente
-    # Esto soluciona la pantalla azul del "Arch de arriba"
-    sudo mkinitcpio -P
-
-    # 2. Habilitar os-prober para detectar Windows correctamente
+    # 1. Asegurar dependencias y encender os-prober
+    sudo pacman -S --needed --noconfirm os-prober ntfs-3g
     sudo sed -i 's/.*GRUB_DISABLE_OS_PROBER.*/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
 
-    # 3. OCULTAR EL ARCH DUPLICADO: Guarda el "fallback" en Advanced Options
-    # Para que solo veas 1 Arch en la pantalla principal
-    sudo sed -i 's/.*GRUB_DISABLE_SUBMENU.*/#GRUB_DISABLE_SUBMENU=y/' /etc/default/grub
+    # 2. EL TRUCO MAGISTRAL:
+    # Apagamos temporalmente el script nativo de Arch (10_linux) que genera la opción rota y las Advanced Options.
+    # Así dejamos que os-prober nos ponga la opción de Arch que sí funciona y la de Windows.
+    sudo chmod -x /etc/grub.d/10_linux
 
-    # 4. Regenerar el menú de GRUB
+    # 3. Generar el archivo de GRUB limpio
     sudo grub-mkconfig -o /boot/grub/grub.cfg
 
-    # 5. LIMPIAR EL SPAM UEFI: Borra la basura de la placa base
+    # 4. Volver a encender el script de Arch (por seguridad para futuras actualizaciones del sistema)
+    sudo chmod +x /etc/grub.d/10_linux
+
+    # 5. LIMPIAR LA BASURA DE LA PLACA BASE:
+    # Borramos todo el spam de EFI BootNext, red y CD/DVD
     sudo sed -i '/EFI BootNext/ , /^[[:space:]]*}/d' /boot/grub/grub.cfg
     sudo sed -i '/VendorCoProductCode/ , /^[[:space:]]*}/d' /boot/grub/grub.cfg
     sudo sed -i '/Network Device/ , /^[[:space:]]*}/d' /boot/grub/grub.cfg
     sudo sed -i '/CD\/DVD Drive/ , /^[[:space:]]*}/d' /boot/grub/grub.cfg
 
-    echo "--> GRUB restaurado a la normalidad: 1 Arch, 1 Windows, 1 UEFI."
+    echo "--> ¡Listo! GRUB restaurado a la perfección."
 }
 
 # ==========================================
