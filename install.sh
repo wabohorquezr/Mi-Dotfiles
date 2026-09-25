@@ -159,20 +159,29 @@ limpiar_sistema() {
 }
 
 configurar_grub() {
-    echo "==> Configurando GRUB para Dual-Boot..."
+    echo "==> Configurando GRUB y reparando arranque..."
 
-    # 1. Asegurar que os-prober y ntfs-3g estén instalados
-    sudo pacman -S --needed --noconfirm os-prober ntfs-3g
+    # 1. REPARAR EL KERNEL: Reconstruye las imágenes de arranque forzosamente
+    # Esto soluciona la pantalla azul del "Arch de arriba"
+    sudo mkinitcpio -P
 
-    # 2. Habilitar os-prober en /etc/default/grub
-    if grep -q "^#GRUB_DISABLE_OS_PROBER=false" /etc/default/grub; then
-        sudo sed -i 's/^#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
-    elif ! grep -q "^GRUB_DISABLE_OS_PROBER=false" /etc/default/grub; then
-        echo "GRUB_DISABLE_OS_PROBER=false" | sudo tee -a /etc/default/grub
-    fi
+    # 2. Habilitar os-prober para detectar Windows correctamente
+    sudo sed -i 's/.*GRUB_DISABLE_OS_PROBER.*/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
 
-    # 3. Regenerar entradas de GRUB
+    # 3. OCULTAR EL ARCH DUPLICADO: Guarda el "fallback" en Advanced Options
+    # Para que solo veas 1 Arch en la pantalla principal
+    sudo sed -i 's/.*GRUB_DISABLE_SUBMENU.*/#GRUB_DISABLE_SUBMENU=y/' /etc/default/grub
+
+    # 4. Regenerar el menú de GRUB
     sudo grub-mkconfig -o /boot/grub/grub.cfg
+
+    # 5. LIMPIAR EL SPAM UEFI: Borra la basura de la placa base
+    sudo sed -i '/EFI BootNext/ , /^[[:space:]]*}/d' /boot/grub/grub.cfg
+    sudo sed -i '/VendorCoProductCode/ , /^[[:space:]]*}/d' /boot/grub/grub.cfg
+    sudo sed -i '/Network Device/ , /^[[:space:]]*}/d' /boot/grub/grub.cfg
+    sudo sed -i '/CD\/DVD Drive/ , /^[[:space:]]*}/d' /boot/grub/grub.cfg
+
+    echo "--> GRUB restaurado a la normalidad: 1 Arch, 1 Windows, 1 UEFI."
 }
 
 # ==========================================
