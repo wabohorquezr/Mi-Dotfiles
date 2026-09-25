@@ -159,36 +159,20 @@ limpiar_sistema() {
 }
 
 configurar_grub() {
-    echo "==> Generando GRUB y eliminando la opción de Arch que falla..."
+    echo "==> Configurando GRUB para Dual-Boot..."
 
-    # 1. Instalar dependencias y habilitar os-prober para Windows
+    # 1. Asegurar que os-prober y ntfs-3g estén instalados
     sudo pacman -S --needed --noconfirm os-prober ntfs-3g
-    sudo sed -i 's/.*GRUB_DISABLE_OS_PROBER.*/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
 
-    # 2. Generar la configuración de GRUB
+    # 2. Habilitar os-prober en /etc/default/grub
+    if grep -q "^#GRUB_DISABLE_OS_PROBER=false" /etc/default/grub; then
+        sudo sed -i 's/^#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
+    elif ! grep -q "^GRUB_DISABLE_OS_PROBER=false" /etc/default/grub; then
+        echo "GRUB_DISABLE_OS_PROBER=false" | sudo tee -a /etc/default/grub
+    fi
+
+    # 3. Regenerar entradas de GRUB
     sudo grub-mkconfig -o /boot/grub/grub.cfg
-
-    # 3. BORRAR LA OPCIÓN ROTA DE ARCH Y EL SPAM UEFI
-    sudo python3 -c '
-import re
-
-with open("/boot/grub/grub.cfg", "r") as f:
-    cfg = f.read()
-
-# Eliminar entradas basura de la tarjeta madre (EFI BootNext, Network, etc.)
-cfg = re.sub(r"menuentry \x27[^\x27]*(EFI BootNext|VendorCo|Network Device|CD/DVD)[^\x27]*\x27 [^{]*\{[^}]*\}\n?", "", cfg)
-
-# Si hay duplicados de "Arch Linux", borrar el primero (el que da Kernel Panic)
-matches = list(re.finditer(r"menuentry \x27Arch Linux\x27 [^{]*\{.*?\n\}", cfg, re.DOTALL))
-if len(matches) > 1:
-    start, end = matches[0].span()
-    cfg = cfg[:start] + cfg[end:]
-
-with open("/boot/grub/grub.cfg", "w") as f:
-    f.write(cfg)
-'
-
-    echo "--> Entrada rota eliminada. Menú limpiado correctamente."
 }
 
 # ==========================================
