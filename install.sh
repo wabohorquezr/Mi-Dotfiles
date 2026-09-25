@@ -157,34 +157,37 @@ limpiar_sistema() {
     echo " ¡Instalación de Dotfiles completada con éxito!"
     echo "================================================="
 }
-
 configurar_grub() {
-    echo "==> Configurando GRUB para Dual-Boot y limpiando entradas basura..."
+    echo "==> Configurando GRUB para Dual-Boot y reparando kernels..."
     
-    # 1. Asegurar que os-prober y ntfs-3g estén instalados
-    sudo pacman -S --needed --noconfirm os-prober ntfs-3g
+    # 1. Asegurar dependencias
+    sudo pacman -S --needed --noconfirm os-prober ntfs-3g mkinitcpio
 
-    # 2. Habilitar os-prober en /etc/default/grub (Para detectar Windows real)
+    # 2. Habilitar os-prober en /etc/default/grub (Para Windows)
     if grep -q "^#GRUB_DISABLE_OS_PROBER=false" /etc/default/grub; then
         sudo sed -i 's/^#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
     elif ! grep -q "^GRUB_DISABLE_OS_PROBER=false" /etc/default/grub; then
         echo "GRUB_DISABLE_OS_PROBER=false" | sudo tee -a /etc/default/grub
     fi
 
-    # 3. SOLUCIONAR EL MÚLTIPLE "ARCH LINUX" CON ERROR:
-    # Agrupa las versiones extra (como el fallback que suele dar error) en "Advanced options"
-    sudo sed -i 's/^GRUB_DISABLE_SUBMENU=.*/#GRUB_DISABLE_SUBMENU=y/' /etc/default/grub
+    # 3. SOLUCIÓN AL "KERNEL PANIC" EN LA PANTALLA PRINCIPAL:
+    # Agrupar kernels adicionales en el submenú "Advanced options".
+    # Esto asegura que solo haya un "Arch Linux" principal (el más reciente/funcional).
+    sudo sed -i 's/^GRUB_DISABLE_SUBMENU=y/#GRUB_DISABLE_SUBMENU=y/' /etc/default/grub
 
-    # 4. SOLUCIONAR DUPLICADOS DE SCRIPT:
-    # Quita permisos de ejecución a copias de seguridad de grub que duplican el menú
+    # 4. REPARAR EL INITRAMFS FALTANTE:
+    # Esto soluciona el "Kernel Panic: VFS: Unable to mount root fs"
+    echo "==> Regenerando initramfs para todos los kernels..."
+    sudo mkinitcpio -P
+
+    # 5. Desactivar scripts de backup duplicados
     sudo find /etc/grub.d -type f -name "*.bak" -exec chmod -x {} \;
     sudo find /etc/grub.d -type f -name "*~" -exec chmod -x {} \;
 
-    # 5. Regenerar el archivo GRUB inicial
+    # 6. Regenerar el archivo GRUB
     sudo grub-mkconfig -o /boot/grub/grub.cfg
 
-    # 6. ARREGLAR EN EL ACTO: Limpiar el archivo de la basura "EFI BootNext"
-    # Escanea el archivo generado y elimina de forma limpia los bloques fantasma
+    # 7. Limpiar la basura "EFI BootNext" del archivo final
     echo "==> Limpiando entradas fantasmas del menú..."
     sudo awk '
     BEGIN { skip=0; braces=0 }
@@ -199,7 +202,7 @@ configurar_grub() {
     
     sudo mv /tmp/grub_limpio.cfg /boot/grub/grub.cfg
 
-    echo "--> GRUB configurado y menú restaurado a la normalidad."
+    echo "--> GRUB configurado, initramfs reparado y menú limpio."
 }
 
 # ==========================================
