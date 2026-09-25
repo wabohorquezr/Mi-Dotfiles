@@ -159,48 +159,37 @@ limpiar_sistema() {
 }
 
 configurar_grub() {
-    echo "==> Restaurando GRUB (1 Arch, 1 Windows, 1 UEFI)..."
+    echo "==> Reparando y limpiando GRUB..."
 
-    # 1. REPARAR EL KERNEL ROTO (Pantallazo azul)
-    # Reinstalar 'linux' fuerza a generar los archivos faltantes correctamente
-    sudo pacman -S --noconfirm os-prober ntfs-3g linux mkinitcpio
+    # 1. Asegurar paquetes base y reconstruir archivos de arranque
+    sudo pacman -S --needed --noconfirm os-prober ntfs-3g linux mkinitcpio
     sudo mkinitcpio -P
 
-    # 2. MANTENER OS-PROBER ENCENDIDO (Para detectar Windows)
-    if grep -q "^#GRUB_DISABLE_OS_PROBER=false" /etc/default/grub; then
-        sudo sed -i 's/^#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
-    elif ! grep -q "^GRUB_DISABLE_OS_PROBER=false" /etc/default/grub; then
-        echo "GRUB_DISABLE_OS_PROBER=false" | sudo tee -a /etc/default/grub
-    fi
+    # 2. ELIMINAR EL KERNEL ROTO (Soluciona el "Arch de arriba" que falla)
+    # Busca archivos de kernel residuales que no tengan su imagen .img y los borra
+    for kernel in /boot/vmlinuz-*; do
+        [ -e "$kernel" ] || continue
+        initramfs="/boot/initramfs-${kernel#/boot/vmlinuz-}.img"
+        if [ ! -f "$initramfs" ]; then
+            sudo rm -f "$kernel"
+        fi
+    done
 
-    # 3. EVITAR EL ARCH DUPLICADO
-    # Le quitamos el permiso a os-prober de buscar Linux, así solo buscará Windows
-    if [ -f /usr/lib/os-probes/mounted/90linux-distro ]; then
-        sudo chmod -x /usr/lib/os-probes/mounted/90linux-distro
-    fi
+    # 3. Configurar GRUB base (Habilitar Windows y ocultar opciones extra de Arch)
+    sudo sed -i 's/.*GRUB_DISABLE_OS_PROBER.*/GRUB_DISABLE_OS_PROBER=false/' /etc/default/grub
+    sudo sed -i 's/.*GRUB_DISABLE_SUBMENU.*/#GRUB_DISABLE_SUBMENU=y/' /etc/default/grub
 
-    # 4. Agrupar opciones extra en "Advanced options"
-    sudo sed -i 's/^GRUB_DISABLE_SUBMENU=y/#GRUB_DISABLE_SUBMENU=y/' /etc/default/grub
-
-    # 5. Generar GRUB base
+    # 4. Regenerar archivo de menú
     sudo grub-mkconfig -o /boot/grub/grub.cfg
 
-    # 6. LIMPIAR LA BASURA "EFI BootNext"
-    echo "--> Limpiando spam de la placa base..."
-    sudo awk '
-    BEGIN { skip=0; braces=0 }
-    /^[[:space:]]*menuentry .*(EFI BootNext|VendorCoProductCode|Network Device)/ { skip=1 }
-    skip==1 {
-        braces += gsub(/{/, "{") - gsub(/}/, "}")
-        if (braces == 0) skip=0
-        next
-    }
-    { print }
-    ' /boot/grub/grub.cfg | sudo tee /tmp/grub_limpio.cfg > /dev/null
-    
-    sudo mv /tmp/grub_limpio.cfg /boot/grub/grub.cfg
+    # 5. LIMPIAR EL SPAM DE LA PLACA BASE (Método ultra simple con sed)
+    # Borra los bloques de texto basura para dejar solo lo importante
+    sudo sed -i '/EFI BootNext/ , /^[[:space:]]*}/d' /boot/grub/grub.cfg
+    sudo sed -i '/VendorCoProductCode/ , /^[[:space:]]*}/d' /boot/grub/grub.cfg
+    sudo sed -i '/Network Device/ , /^[[:space:]]*}/d' /boot/grub/grub.cfg
+    sudo sed -i '/CD\/DVD Drive/ , /^[[:space:]]*}/d' /boot/grub/grub.cfg
 
-    echo "--> ¡Listo! GRUB restaurado a la normalidad."
+    echo "--> ¡Listo! GRUB restaurado a 1 Arch, 1 Windows, 1 UEFI."
 }
 
 # ==========================================
