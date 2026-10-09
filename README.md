@@ -13,7 +13,7 @@ Bienvenido a mi configuración personal de **Arch Linux** con el gestor de venta
 *Desktop con Hyprland, Waybar y Rofi*
 
 | Terminal (Kitty) | Rofi Selector | Fastfetch |
-| :---: | :---: | :---: |
+| :---: | :---: | :---: | :---: |
 | ![Term](Archivo/2026-10-09_08-18-42.png) | ![Rofi](Archivo/2026-10-09_08-12-46.png) | ![Wallpaper](Archivo/2026-10-09_08-14-46.png) | ![Ranger](Archivo/2026-10-09_08-20-52.png) | 
 
 ---
