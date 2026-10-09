@@ -9,7 +9,7 @@ Bienvenido a mi configuración personal de **Arch Linux** con el gestor de venta
 
 ## Capturas de Pantalla
 
-![Desktop Preview](Archivo/2026-10-09_08-09-19.png)
+![Desktop Preview](Archivo/2026-10-09_08-26-10.png)
 *Desktop con Hyprland, Waybar y Rofi*
 
 | Terminal (Kitty) | Rofi Selector | Fastfetch |
