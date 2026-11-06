@@ -168,13 +168,9 @@ for i = 1, 10 do
     hl.bind(mainMod .. " + SHIFT + " .. key,     hl.dsp.window.move({ workspace = i }))
 end
 
+
 hl.bind(mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))
 hl.bind(mainMod .. " + mouse_up",   hl.dsp.focus({ workspace = "e-1" }))
-
--- Pantalla completa
-hl.bind(mainMod .. " + F", hl.dsp.exec_cmd("hyprctl dispatch fullscreen 1"))
-hl.bind(mainMod .. " + SHIFT + F", hl.dsp.exec_cmd("hyprctl dispatch fullscreen 0"))
-
 -- Portapapeles y capturas
 hl.bind("SUPER + slash", hl.dsp.exec_cmd("cliphist list | rofi -dmenu -p 'Historial' | cliphist decode | wl-copy"))
 hl.bind("Print", hl.dsp.exec_cmd("grim - | wl-copy"))
@@ -189,6 +185,12 @@ hl.bind("XF86AudioMicMute",     hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_S
 hl.bind("XF86MonBrightnessUp",  hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%+"),                  { locked = true, repeating = true })
 hl.bind("XF86MonBrightnessDown",hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%-"),                  { locked = true, repeating = true })
 
+
+-- Pantalla completa maximizada (mantiene barras o gaps según tu config)
+hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen({ mode = 1 }))
+
+-- Pantalla completa real (tipo F11 en Windows, oculta barras y bordes)
+hl.bind(mainMod .. " + SHIFT + F", hl.dsp.window.fullscreen({ mode = 0 }))
 
 --------------------------------
 ---- WINDOWS AND WORKSPACES ----
