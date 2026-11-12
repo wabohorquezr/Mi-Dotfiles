@@ -14,6 +14,20 @@ TMP_DIR="/tmp/mis-dotfiles"
 # 1. FUNCIONES DE INSTALACIÓN
 # ==========================================
 
+
+actualizar_espejos_y_sistema() {
+    echo "==> Instalando pacman-contrib y actualizando espejos con reflector..."
+    sudo pacman -S --needed --noconfirm pacman-contrib
+    sudo reflector --latest 30 --protocol https --save /etc/pacman.d/mirrorlist
+
+    echo "==> Limpiando caché de paquetes parciales..."
+    sudo pacman -Sc --noconfirm
+
+    echo "==> Iniciando actualización completa del sistema..."
+    sudo pacman -Syu --noconfirm
+    echo "--> Sistema actualizado correctamente."
+}
+
 preparar_repositorio() {
     echo "==> Clonando repositorio..."
     rm -rf "$TMP_DIR"
@@ -191,6 +205,7 @@ configurar_grub() {
 # Si quieres omitir un paso (por ejemplo, los cursores),
 # simplemente pon un '#' al inicio de esa línea.
 
+actualizar_espejos_y_sistema
 preparar_repositorio
 instalar_paquetes_base
 desplegar_configuraciones
