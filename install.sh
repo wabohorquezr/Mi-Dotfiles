@@ -206,11 +206,12 @@ configurar_grub() {
 # Si quieres omitir un paso (por ejemplo, los cursores),
 # simplemente pon un '#' al inicio de esa línea.
 
-actualizar_espejos_y_sistema
+
 preparar_repositorio
 instalar_paquetes_base
 desplegar_configuraciones
 instalar_entorno_aur
+actualizar_espejos_y_sistema
 instalar_nvchad
 instalar_cursores
 configurar_grub
