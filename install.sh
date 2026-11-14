@@ -131,6 +131,7 @@ instalar_entorno_aur() {
         slack-desktop
         elecwhat-bin
         qucs-s
+        reflector
     )
     yay -S --needed --noconfirm "${PKGSYAY[@]}"
     echo "--> Aplicaciones de AUR instaladas correctamente."
