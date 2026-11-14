@@ -16,6 +16,7 @@ PKGS=(
     libnotify
     zathura-pdf-mupdf
     vlc
+    reflector
     wl-clipboard
     cliphist
     waybar
